@@ -73,16 +73,6 @@ class ItemController extends Controller
         return response()->json($item);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -93,7 +83,20 @@ class ItemController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(),[
+            'text' => 'required'
+        ]);
+
+        if($validator->fails()) {
+            $response = array('response' => $validator->messages(), 'success' => false);
+            return $response;
+        }
+        //find the body
+        $item = Item::find($id);
+        $item->text = $request->input('text');
+        $item->body = $request->input('body');
+
+        return response()->json($item);
     }
 
     /**
@@ -104,6 +107,10 @@ class ItemController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $item = Item::find($id);
+        $item->delete();
+
+        $response = array('response' => 'Item successfully deleted', 'success' => true);
+        return $response;
     }
 }
